@@ -181,9 +181,9 @@ const unityApp = {
         const loaderUrl = buildUrl + "/cee3bfd5589651a8b16e2a12b8abe5b3.loader.js";
         const config = {
             arguments: [],
-            dataUrl: buildUrl + "/defb25402fa6c7611f9af0932f25819a.data.unityweb",
+            dataUrl: buildUrl + "/91c716f0b4db86fc571590a3a76d0e87.data.unityweb",
             frameworkUrl: buildUrl + "/1c541c65b461c6f10492f1b119111798.framework.js.unityweb",
-            codeUrl: buildUrl + "/d1f206c72edd4b96229dd01c3d524adf.wasm.unityweb",
+            codeUrl: buildUrl + "/3021891e686384603b8fa039ccc0d92f.wasm.unityweb",
             streamingAssetsUrl: "StreamingAssets",
             companyName: "liss48",
             productName: "Obby",
