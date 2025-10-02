@@ -178,12 +178,12 @@ const unityApp = {
         const progressBarFull = document.querySelector("#unity-progress-bar-full");
 
         const buildUrl = "Build";
-        const loaderUrl = buildUrl + "/cee3bfd5589651a8b16e2a12b8abe5b3.loader.js";
+        const loaderUrl = buildUrl + "/7a2dbded24d57e056180125b1583e7c4.loader.js";
         const config = {
             arguments: [],
-            dataUrl: buildUrl + "/0c1247dd4dd32706c9e2272e470af962.data.unityweb",
-            frameworkUrl: buildUrl + "/1014451bcf5c28f8ec76ec4086e45e0d.framework.js.unityweb",
-            codeUrl: buildUrl + "/95c1f5ac6a134fbefb29668ca33e63ea.wasm.unityweb",
+            dataUrl: buildUrl + "/0cf1ebed5762a389289fa1a5a1733784.data.br",
+            frameworkUrl: buildUrl + "/1014451bcf5c28f8ec76ec4086e45e0d.framework.js.br",
+            codeUrl: buildUrl + "/95c1f5ac6a134fbefb29668ca33e63ea.wasm.br",
             streamingAssetsUrl: "StreamingAssets",
             companyName: "liss48",
             productName: "Obby",
