@@ -103,15 +103,22 @@ const unityApp = {
     },
 
     tryLockAspectRatio() {
-        const mobileAspectRatioInput = "";
-        const isMobileLocked = !this.isEmpty(mobileAspectRatioInput);
-        const mobileAspectRatio = isMobileLocked ? this.toNumber(mobileAspectRatioInput) : 1.0;
-        console.log("mobileAspectRatio", mobileAspectRatioInput, isMobileLocked, mobileAspectRatio);
+        const mobilePortraitAspectRatio = "";
+        const mobileLandscapeAspectRatio = "";
+        const desktopAspectRatio = "";
 
-        const desktopAspectRatioInput = "";
-        const isDesktopLocked = !this.isEmpty(desktopAspectRatioInput);
-        const desktopAspectRatio = isDesktopLocked ? this.toNumber(desktopAspectRatioInput) : 1.0;
-        console.log("desktopAspectRatio", desktopAspectRatioInput, isDesktopLocked, desktopAspectRatio);
+        const isMobilePortraitLocked = !this.isEmpty(mobilePortraitAspectRatio);
+        const isMobileLandscapeLocked = !this.isEmpty(mobileLandscapeAspectRatio);
+        const isDesktopLocked = !this.isEmpty(desktopAspectRatio);
+
+        console.log('tryLockAspectRatio', {
+            mobilePortraitAspectRatio: mobilePortraitAspectRatio,
+            mobileLandscapeAspectRatio: mobileLandscapeAspectRatio,
+            desktopAspectRatio: desktopAspectRatio,
+            isMobilePortraitLocked: isMobilePortraitLocked,
+            isMobileLandscapeLocked: isMobileLandscapeLocked,
+            isDesktopLocked: isDesktopLocked
+        });
 
         const container = document.querySelector("#unity-container");
         const canvas = document.querySelector("#unity-canvas");
@@ -130,11 +137,15 @@ const unityApp = {
             centerCanvas();
         }
 
-        function recalculateAspectRatio(aspectRatio) {
-            let containerWidth = container.clientWidth;
-            let containerHeight = container.clientHeight;
+        function isPortraitMode() {
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
+            return containerHeight > containerWidth;
+        }
 
-            // Apply aspect ratio lock with pixel-perfect size.
+        function recalculateAspectRatio(aspectRatio) {
+            const containerWidth = container.clientWidth;
+            const containerHeight = container.clientHeight;
             if (containerWidth / containerHeight > aspectRatio) {
                 canvas.style.width = Math.floor(containerHeight * aspectRatio) + "px";
                 canvas.style.height = "100%";
@@ -148,15 +159,20 @@ const unityApp = {
         function updateAspectRatio() {
             resetAspectRatio();
             if (unityApp.isMobile()) {
-                // Mobile
-                if (isMobileLocked) {
-                    recalculateAspectRatio(mobileAspectRatio);
+                if (isPortraitMode()) {
+                    if (isMobilePortraitLocked) {
+                        recalculateAspectRatio(unityApp.toNumber(mobilePortraitAspectRatio));
+                    }
+                }
+                else {
+                    if (isMobileLandscapeLocked) {
+                        recalculateAspectRatio(unityApp.toNumber(mobileLandscapeAspectRatio));
+                    }
                 }
             }
             else {
-                // Desktop
                 if (isDesktopLocked) {
-                    recalculateAspectRatio(desktopAspectRatio);
+                    recalculateAspectRatio(unityApp.toNumber(desktopAspectRatio));
                 }
             }
             centerCanvas();
@@ -181,9 +197,9 @@ const unityApp = {
         const loaderUrl = buildUrl + "/cee3bfd5589651a8b16e2a12b8abe5b3.loader.js";
         const config = {
             arguments: [],
-            dataUrl: buildUrl + "/91c716f0b4db86fc571590a3a76d0e87.data.unityweb",
-            frameworkUrl: buildUrl + "/1c541c65b461c6f10492f1b119111798.framework.js.unityweb",
-            codeUrl: buildUrl + "/3021891e686384603b8fa039ccc0d92f.wasm.unityweb",
+            dataUrl: buildUrl + "/59fe0d4fc2c516ddedf3570c36bbc0f7.data.unityweb",
+            frameworkUrl: buildUrl + "/1014451bcf5c28f8ec76ec4086e45e0d.framework.js.unityweb",
+            codeUrl: buildUrl + "/95c1f5ac6a134fbefb29668ca33e63ea.wasm.unityweb",
             streamingAssetsUrl: "StreamingAssets",
             companyName: "liss48",
             productName: "Obby",
@@ -303,14 +319,37 @@ const unityApp = {
 
 };
 
-// Apply common fixes.
-unityApp.applyCommonFixes();
+async function createScriptAsync(src) {
+    return new Promise((resolve, reject) => {
+        try {
+            const script = document.createElement('script');
+            script.src = src;
+            script.onload = () => { resolve(); };
+            script.onerror = () => { reject(); };
+            script.async = true;
+            document.body.appendChild(script);
+        } catch (exception) {
+            console.error('createScriptAsync', exception);
+            reject();
+        }
+    });
+}
 
-// Lock rotation.
-unityApp.tryRotationLock();
+async function loadingPipeline() {
+    unityApp.applyCommonFixes();
+    unityApp.tryRotationLock();
+    unityApp.tryLockAspectRatio();
 
-// Lock aspect ratio.
-unityApp.tryLockAspectRatio();
+    try {
+        await createScriptAsync('https://unpkg.com/@vkontakte/vk-bridge/dist/browser.min.js');
+        const status = await window.vkBridge.send('VKWebAppInit');
+        console.log('VKWebAppInit', status);
+    }
+    catch (exception) {
+        console.error('VKWebAppInit failed', exception);
+    }
 
-// Automatically start after script is loaded.
-unityApp.startLoading();
+    unityApp.startLoading();
+}
+
+loadingPipeline();
